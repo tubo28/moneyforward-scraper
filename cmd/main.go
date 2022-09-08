@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	cookiejar "github.com/juju/persistent-cookiejar"
@@ -15,13 +16,13 @@ import (
 )
 
 func main() {
-	id := os.Getenv("MF_ID")
-	if id == "" {
-		panic("no MF_ID")
+	idPassword := os.Getenv("MF_ID_PASSWORD")
+	if idPassword == "" {
+		panic("no MF_ID_PASSWORD")
 	}
-	password := os.Getenv("MF_PASSWORD")
-	if password == "" {
-		panic("no MF_PASSWORD")
+	id, password, err := splitIDPassword(idPassword)
+	if err != nil {
+		panic(err)
 	}
 
 	jar, err := cookiejar.New(&cookiejar.Options{Filename: cookieFileName(id)})
@@ -42,6 +43,18 @@ func main() {
 	if t.Month() != t2.Month() {
 		fetch(httpClient, int(t2.Year()), int(t2.Month()))
 	}
+}
+
+func splitIDPassword(idPassword string) (string, string, error) {
+	i := strings.Index(idPassword, "@")
+	if i == -1 {
+		return "", "", fmt.Errorf("invalid mail:password format")
+	}
+	j := strings.Index(idPassword[i:], ":")
+	if j == -1 {
+		return "", "", fmt.Errorf("invalid mail:password format")
+	}
+	return idPassword[0 : i+j], idPassword[i+j+1:], nil
 }
 
 func fetch(client *http.Client, y, m int) ([]*mf.MFTransaction, error) {
