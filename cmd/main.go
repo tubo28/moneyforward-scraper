@@ -26,17 +26,20 @@ func main() {
 	id, password, err := splitIDPassword(idPassword)
 	if err != nil {
 		panic(err)
-
 	}
 
 	cookie := cookieFileName(id)
 	log.Print("cookie file: ", cookie)
+
+	if err := os.MkdirAll(filepath.Dir(cookie), os.ModePerm); err != nil {
+		panic(err)
+	}
 	jar, err := cookiejar.New(&cookiejar.Options{Filename: cookie})
 	if err != nil {
 		panic(err)
 	}
-	httpClient := &http.Client{Jar: jar}
 
+	httpClient := &http.Client{Jar: jar}
 	if err := browse.Login(httpClient, id, password); err != nil {
 		panic(err)
 	}
@@ -111,11 +114,15 @@ func cookieFileName(id string) string {
 	}
 	ret += "_"
 	ret += fmt.Sprintf("%x", md5.Sum([]byte(id)))
-	ret, err := filepath.Abs(filepath.Join("cookie", ret))
+
+	home, err := os.UserHomeDir()
 	if err != nil {
+		// todo
 		panic(err)
 	}
-	if err := os.MkdirAll("~/cookie", os.ModePerm); err != nil {
+	ret = filepath.Join(home, "cookie", ret)
+	ret, err = filepath.Abs(ret)
+	if err != nil {
 		panic(err)
 	}
 	return ret
