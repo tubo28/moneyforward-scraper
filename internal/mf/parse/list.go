@@ -56,7 +56,7 @@ func List(html []byte, year, month int) ([]*mf.MFTransaction, error) {
 		}
 		ret = append(ret, mft)
 
-		log.Printf("parsed id:%s date:%s", mft.TransactionID, mft.Date)
+		// log.Printf("parsed id:%s date:%s", mft.TransactionID, mft.Date)
 	})
 
 	return ret, nil

@@ -2,11 +2,13 @@ package main
 
 import (
 	"crypto/md5"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -40,13 +42,31 @@ func main() {
 	}
 	jar.Save()
 
+	var ret []*mf.MFTransaction
+
 	// 登録までのタイムラグ対策として現在の日付とその14日前の月を取りに行く
+	// 今月
 	t := time.Now()
-	fetch(httpClient, int(t.Year()), int(t.Month()))
+	ts, err := fetch(httpClient, int(t.Year()), int(t.Month()))
+	if err != nil {
+		panic(err)
+	}
+	ret = append(ret, ts...)
+
+	// 先月
 	t2 := t.AddDate(0, 0, -14)
 	if t.Month() != t2.Month() {
-		fetch(httpClient, int(t2.Year()), int(t2.Month()))
+		ts2, err := fetch(httpClient, int(t2.Year()), int(t2.Month()))
+		if err != nil {
+			panic(err)
+		}
+		ret = append(ret, ts2...)
 	}
+
+	sort.Slice(ts, func(i, j int) bool {
+		return ret[i].Date.Before(ret[j].Date) // desc sort
+	})
+	json.NewEncoder(os.Stdout).Encode(ret)
 }
 
 func splitIDPassword(idPassword string) (string, string, error) {
@@ -74,9 +94,9 @@ func fetch(client *http.Client, y, m int) ([]*mf.MFTransaction, error) {
 		return nil, fmt.Errorf("failed to parse list page %04d/%2d: %w", y, m, err)
 	}
 
-	for _, t := range ts {
-		log.Printf("%+v", t)
-	}
+	// for _, t := range ts {
+	// 	log.Printf("%+v", t)
+	// }
 
 	return ts, nil
 }
