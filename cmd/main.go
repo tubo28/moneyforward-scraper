@@ -10,9 +10,9 @@ import (
 	"time"
 
 	cookiejar "github.com/juju/persistent-cookiejar"
-	"github.com/tubo28/moneyforward-scraper/internal/browse"
 	"github.com/tubo28/moneyforward-scraper/internal/mf"
-	"github.com/tubo28/moneyforward-scraper/internal/parse"
+	"github.com/tubo28/moneyforward-scraper/internal/mf/browse"
+	"github.com/tubo28/moneyforward-scraper/internal/mf/parse"
 )
 
 func main() {
