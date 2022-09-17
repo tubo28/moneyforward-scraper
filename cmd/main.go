@@ -23,9 +23,12 @@ func main() {
 	id, password, err := splitIDPassword(idPassword)
 	if err != nil {
 		panic(err)
+
 	}
 
-	jar, err := cookiejar.New(&cookiejar.Options{Filename: cookieFileName(id)})
+	cookie := cookieFileName(id)
+	log.Print("cookie file: ", cookie)
+	jar, err := cookiejar.New(&cookiejar.Options{Filename: cookie})
 	if err != nil {
 		panic(err)
 	}
