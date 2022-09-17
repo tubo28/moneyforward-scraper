@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -81,8 +82,7 @@ func fetch(client *http.Client, y, m int) ([]*mf.MFTransaction, error) {
 }
 
 func cookieFileName(id string) string {
-	ret := cookiejar.DefaultCookieFile()
-	ret += "_"
+	var ret string
 	for _, c := range id {
 		if !(('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z') || ('0' <= c && c <= '9')) {
 			c = '.'
@@ -91,5 +91,12 @@ func cookieFileName(id string) string {
 	}
 	ret += "_"
 	ret += fmt.Sprintf("%x", md5.Sum([]byte(id)))
+	ret, err := filepath.Abs(filepath.Join("cookie", ret))
+	if err != nil {
+		panic(err)
+	}
+	if err := os.MkdirAll("~/cookie", os.ModePerm); err != nil {
+		panic(err)
+	}
 	return ret
 }
