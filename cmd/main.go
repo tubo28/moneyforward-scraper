@@ -40,9 +40,34 @@ func main() {
 	}
 
 	httpClient := &http.Client{Jar: jar}
-	if err := browse.Login(httpClient, id, password); err != nil {
+
+	// ログイン確認
+	loggedIn, err := browse.CheckLogin(httpClient)
+	if err != nil {
 		panic(err)
 	}
+
+	log.Print("logged in: ", loggedIn)
+	if !loggedIn {
+		// 明示的にログアウト
+		jar.RemoveAll()
+
+		// ログイン
+		if err := browse.Login(httpClient, id, password); err != nil {
+			panic(err)
+		}
+
+		// 再度ログイン確認
+		loggedIn, err = browse.CheckLogin(httpClient)
+		if err != nil {
+			panic(err)
+		}
+		if !loggedIn {
+			log.Fatal("login failed for ", id)
+		}
+	}
+
+	log.Print("login ok for ", id)
 	jar.Save()
 
 	var ret []*mf.MFTransaction

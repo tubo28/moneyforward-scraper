@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	embedJSONRegexp = regexp.MustCompile("gon\\.authorizationParams=({.*?})")
+	embedJSONRegexp = regexp.MustCompile(`gon\.authorizationParams=({.*?})`)
 )
 
 type embedJSON struct {
@@ -25,6 +25,23 @@ type embedJSON struct {
 	Scope        string `json:"scope"`
 	State        string `json:"state"`
 	Nonce        string `json:"nonce"`
+}
+
+func CheckLogin(client *http.Client) (bool, error) {
+	req, _ := newGetRequest("https://moneyforward.com/profile")
+	resp, err := client.Do(req)
+	time.Sleep(time.Second)
+	if err != nil {
+		return false, fmt.Errorf("failed to load /profile: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return false, fmt.Errorf("failed to read body of /profile: %w", err)
+	}
+
+	return bytes.Contains(body, []byte("アカウント設定")), nil
 }
 
 func Login(client *http.Client, mail, password string) error {
@@ -48,7 +65,7 @@ func Login(client *http.Client, mail, password string) error {
 		jsMatched := embedJSONRegexp.FindSubmatch(body)
 		if jsMatched == nil {
 			// ログイン済み
-			log.Print("already logged in for ", mail)
+			log.Print("Login called, but it seems already logged in for ", mail)
 			return nil
 		}
 		var js embedJSON
@@ -178,6 +195,5 @@ func Login(client *http.Client, mail, password string) error {
 		io.ReadAll(resp.Body)
 	}
 
-	log.Print("login ok for ", mail)
 	return nil
 }
