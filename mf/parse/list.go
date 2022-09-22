@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/tubo28/moneyforward-scraper/internal/mf"
+	"github.com/tubo28/moneyforward-scraper/mf"
 )
 
 func List(html []byte, year, month int) ([]*mf.MFTransaction, error) {
@@ -20,6 +20,7 @@ func List(html []byte, year, month int) ([]*mf.MFTransaction, error) {
 
 	var ret []*mf.MFTransaction
 
+	now := time.Now()
 	doc.Find(".list_body .transaction_list").Each(func(i int, s *goquery.Selection) {
 		var tds []*goquery.Selection
 		s.Find("td").Each(func(i int, s *goquery.Selection) {
@@ -53,6 +54,7 @@ func List(html []byte, year, month int) ([]*mf.MFTransaction, error) {
 			LargeCategory:     strings.TrimSpace(tds[5].Text()),
 			MiddleCategory:    strings.TrimSpace(tds[6].Text()),
 			Memo:              strings.TrimSpace(tds[7].Text()),
+			CollectedDate:     now,
 		}
 		ret = append(ret, mft)
 

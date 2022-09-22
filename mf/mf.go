@@ -12,4 +12,5 @@ type MFTransaction struct {
 	LargeCategory     string
 	MiddleCategory    string
 	Memo              string
+	CollectedDate     time.Time
 }

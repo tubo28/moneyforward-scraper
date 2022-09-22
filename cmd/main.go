@@ -13,9 +13,9 @@ import (
 	"time"
 
 	cookiejar "github.com/juju/persistent-cookiejar"
-	"github.com/tubo28/moneyforward-scraper/internal/mf"
-	"github.com/tubo28/moneyforward-scraper/internal/mf/browse"
-	"github.com/tubo28/moneyforward-scraper/internal/mf/parse"
+	"github.com/tubo28/moneyforward-scraper/mf"
+	"github.com/tubo28/moneyforward-scraper/mf/browse"
+	"github.com/tubo28/moneyforward-scraper/mf/parse"
 )
 
 func main() {
