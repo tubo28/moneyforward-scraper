@@ -18,7 +18,7 @@ func List(html []byte, year, month int) ([]*mf.MFTransaction, error) {
 		return nil, fmt.Errorf("cannot build goquery Document: %w", err)
 	}
 
-	var ret []*mf.MFTransaction
+	ret := make([]*mf.MFTransaction, 0)
 
 	now := time.Now()
 	doc.Find(".list_body .transaction_list").Each(func(i int, s *goquery.Selection) {
