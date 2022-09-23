@@ -3,6 +3,7 @@ package mf
 import "time"
 
 type MFTransaction struct {
+	UserID            string
 	TransactionID     string
 	IsCalculateTarget bool
 	Date              time.Time

@@ -75,7 +75,7 @@ func main() {
 	// 登録までのタイムラグ対策として現在の日付とその14日前の月を取りに行く
 	// 今月
 	t := time.Now()
-	ts, err := fetch(httpClient, int(t.Year()), int(t.Month()))
+	ts, err := fetch(httpClient, id, int(t.Year()), int(t.Month()))
 	if err != nil {
 		panic(err)
 	}
@@ -84,7 +84,7 @@ func main() {
 	// 先月
 	t2 := t.AddDate(0, 0, -14)
 	if t.Month() != t2.Month() {
-		ts2, err := fetch(httpClient, int(t2.Year()), int(t2.Month()))
+		ts2, err := fetch(httpClient, id, int(t2.Year()), int(t2.Month()))
 		if err != nil {
 			panic(err)
 		}
@@ -109,7 +109,7 @@ func splitIDPassword(idPassword string) (string, string, error) {
 	return idPassword[0 : i+j], idPassword[i+j+1:], nil
 }
 
-func fetch(client *http.Client, y, m int) ([]*mf.MFTransaction, error) {
+func fetch(client *http.Client, id string, y, m int) ([]*mf.MFTransaction, error) {
 	log.Printf("start loading %04d/%02d", y, m)
 
 	html, err := browse.List(client, y, m)
@@ -117,7 +117,7 @@ func fetch(client *http.Client, y, m int) ([]*mf.MFTransaction, error) {
 		return nil, fmt.Errorf("failed to load list page %04d/%2d: %w", y, m, err)
 	}
 
-	ts, err := parse.List(html, y, m)
+	ts, err := parse.List(html, id, y, m)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse list page %04d/%2d: %w", y, m, err)
 	}

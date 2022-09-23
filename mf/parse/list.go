@@ -12,7 +12,7 @@ import (
 	"github.com/tubo28/moneyforward-scraper/mf"
 )
 
-func List(html []byte, year, month int) ([]*mf.MFTransaction, error) {
+func List(html []byte, userID string, year, month int) ([]*mf.MFTransaction, error) {
 	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(html))
 	if err != nil {
 		return nil, fmt.Errorf("cannot build goquery Document: %w", err)
@@ -45,6 +45,7 @@ func List(html []byte, year, month int) ([]*mf.MFTransaction, error) {
 		institution, _ := tds[4].Attr("title")
 
 		mft := &mf.MFTransaction{
+			UserID:            userID,
 			TransactionID:     transactionID,
 			IsCalculateTarget: tds[0].Find("i.icon-check").Length() != 0,
 			Date:              time.Date(year, time.Month(month), date, 0, 0, 0, 0, time.Local),
