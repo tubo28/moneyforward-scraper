@@ -1,17 +1,15 @@
 package mf
 
-import "time"
-
 type MFTransaction struct {
 	UserID            string
 	TransactionID     string
 	IsCalculateTarget bool
-	Date              time.Time
+	DateRFC3339       string
+	DateUnix          int64
 	Content           string
 	Amount            int
 	Institution       string
 	LargeCategory     string
 	MiddleCategory    string
 	Memo              string
-	CollectedDate     time.Time
 }
