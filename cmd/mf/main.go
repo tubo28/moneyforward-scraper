@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/md5"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -19,6 +20,9 @@ import (
 )
 
 func main() {
+	loginOnly := flag.Bool("login-only", false, "exit after login")
+	flag.Parse()
+
 	idPassword := os.Getenv("MF_ID_PASSWORD")
 	if idPassword == "" {
 		panic("no MF_ID_PASSWORD")
@@ -69,6 +73,10 @@ func main() {
 
 	log.Print("login ok for ", id)
 	jar.Save()
+
+	if *loginOnly {
+		return
+	}
 
 	var ret []*mf.MFTransaction
 
