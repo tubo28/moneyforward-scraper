@@ -92,7 +92,8 @@ func main() {
 	}
 
 	sort.Slice(ts, func(i, j int) bool {
-		return ret[i].DateRFC3339.Before(ret[j].DateRFC3339) // desc sort
+		// desc sort
+		return ret[i].DateUnix > ret[j].DateUnix
 	})
 	json.NewEncoder(os.Stdout).Encode(ret)
 }
